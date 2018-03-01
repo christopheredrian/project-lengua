@@ -22,7 +22,7 @@ router.get('/edit/:id', ensureAuthenticated, (req, res) => {
 router.post('/update/:id', ensureAuthenticated, (req, res) => {
     Word.findOne({ _id: req.params.id })
         .then(word => {
-            word.word = req.body.word;
+            word.word = req.body.word.toLowerCase();
             word.score = req.body.score;
             word.dialect = req.body.dialect;
             word.save()
@@ -72,7 +72,7 @@ router.post('/', ensureAuthenticated, (req, res) => {
         });
     } else {
         const newWord = {
-            word: req.body.word,
+            word: req.body.word.toLowerCase(),
             dialect: req.body.dialect,
             score: req.body.score,
             user: req.user.id
