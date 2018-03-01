@@ -1,0 +1,53 @@
+<h2>
+    Example Usage
+    <small class="text-muted">Try to enter a sentence below</small>
+</h2>
+<hr>
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                Input
+            </div>
+            <div class="card-body">
+                <textarea id="paragraph" class="form-control" name="" id="" cols="100" rows="10"></textarea>
+
+                <button class="mt-2 float-right btn btn-primary" id="analyze-btn">Analyze</button>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                Result
+            </div>
+            <div class="card-body">
+                <pre><code id="result" style="font-size: 1.2em"></code></pre>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<h2>API Usage</h2>
+<p>Follow up...</p>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        $('#analyze-btn').click(function () {
+            $.ajax({
+                url: '/api/sentiment/sentence',
+                data: {
+                    sentence: $('#paragraph').val()
+                },
+                success: function (res) {
+                    $('#result').text(JSON.stringify(res, null, "\t"))
+                },
+            });
+        });
+    });
+</script>

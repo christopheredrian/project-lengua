@@ -1,0 +1,34 @@
+{{#each errors}}
+<div class="alert alert-danger">
+    {{ text }}
+</div>
+{{else}}
+{{/each}}
+<div class="card card-body">
+    <h3>Edit Word</h3>
+    <form action="/words/update/{{word.id}}" method="POST">
+        <div class="form-group">
+            <label for="word">Word</label>
+            <input id="word" name="word" type="text" class="form-control" value="{{ word.word }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="dialect">Dialect</label>
+            <select class="form-control" name="dialect" id="dialect" value="{{ word.dialect}}" required >
+                <option value="">Please select a dialect/language</option>
+                <option value="filipino">Filipino/Tagalog</option>
+                <option value="kapampangan">Kapampangan</option>
+                <option value="ilocano">Ilocano</option>
+                <option value="pangasinan">Pangasinan</option>
+                <option value="english">English</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="score">Score</label>
+            <input id="score" name="score" type="number" class="form-control"
+             placeholder="-5 to 5" value="{{word.score}}" required>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+</div>

@@ -1,0 +1,18 @@
+<h2>Word Listing</h2>
+
+<div class="row">
+    {{#each words}}
+    <ul class="list-group col-3">
+        <li class="list-group-item">
+            <strong>{{ word }}</strong> ({{ score}})
+            <br> {{ dialect }}
+            <br>
+            <small>{{moment date format="YYYY-MM-DD"}} </small>
+            <a href="/words/edit/{{ id }}" class="btn btn-dark btn-block mb-2">Edit</a>
+            <form action="/words/delete/{{id}}" method="post">
+                <input type="submit" class="btn btn-block btn-danger" value="Delete">
+            </form>
+        </li>
+    </ul>
+    {{else}} No words listed {{/each}}
+</div>
