@@ -13,7 +13,11 @@ router.get('/', (req, res) => {
 
 router.get('/sentiment/sentence', (req, res) => {
 	// Add the word list
-	Word.find({}, { 'word': 1, 'score': 1, _id: 0 })
+	Word.find({}, {
+			'word': 1,
+			'score': 1,
+			_id: 0
+		})
 		.then(words => {
 			localDictionary = {};
 			// TODO: use query instead
@@ -26,9 +30,32 @@ router.get('/sentiment/sentence', (req, res) => {
 	// res.json(result);
 });
 
+
 router.post('/sentiment/sentence', (req, res) => {
 	res.send('TBI');
 });
 
+router.post('/sentiment/sentences', (req, res) => {
+	// Add the word list
+	if(!isJsonString(req.body.sentences)){
+		res.json({ error: 'json invalid'});
+	}
+	let obj = JSON.parse(req.body.sentences);
+	let response = [];
+	obj.sentences.forEach((sentence) => {
+		response.push(sentiment(sentence));
+	});
+	// res.end();
+	res.json(response);
+});
+
+function isJsonString(str) {
+	try {
+		JSON.parse(str);
+	} catch (e) {
+		return false;
+	}
+	return true;
+}
 
 module.exports = router;
