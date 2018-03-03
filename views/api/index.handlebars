@@ -31,7 +31,96 @@
 </div>
 
 <h2>API Usage</h2>
-<p>Follow up...</p>
+<hr>    
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                Get Request
+            </div>
+            <div class="card-body">
+                <p>The url</p>
+                <pre><code>
+                    /api/sentiment/sentence?sentence=good</code></pre>
+                <h2>Parameters</h2>
+                <p>
+                    <strong>sentence</strong> - escaped sentence 
+                </p>
+                <h2>Returns the JSON object:</h2>
+                <pre><code>
+                        {
+                                    score: 3,
+                                    comparative: 3,
+                                    tokens: [
+                                        "good"
+                                    ],
+                                    words: [
+                                        "good"
+                                    ],
+                                    positive: [
+                                        "good"
+                                    ],
+                                    negative: [ ]
+                        }
+                </code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                POST Request: Multiple Sentences
+            </div>
+            <div class="card-body">
+                <h3>The url</h3>
+                <pre><code>
+                    /api/sentiment/sentences
+                </code></pre>
+                <h2>Parameters</h2>
+                <p>
+                    <strong>sentences</strong> - array of sentences 
+                </p>
+                <h2>Returns the JSON object:</h2>
+                <pre><code>
+                    [
+                        {
+                                    score: 3,
+                                    comparative: 3,
+                                    tokens: [
+                                        "good"
+                                    ],
+                                    words: [
+                                        "good"
+                                    ],
+                                    positive: [
+                                        "good"
+                                    ],
+                                    negative: [ ]
+                        },
+                         {
+                                    score: -3,
+                                    comparative: 3,
+                                    tokens: [
+                                        "bad"
+                                    ],
+                                    words: [
+                                        "bad"
+                                    ],
+                                    positive: [],
+                                    negative: [
+                                    "bad"
+                                    ]
+                        }
+                    ]
+                </code></pre>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
