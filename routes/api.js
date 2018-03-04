@@ -47,7 +47,12 @@ router.post('/sentiment/sentences', (req, res) => {
 		let obj = JSON.parse(req.body.sentences);
 		let response = [];
 		obj.sentences.forEach((sentence) => {
-			response.push(sentiment(sentence));
+			let res = sentiment(sentence);
+			response.push({
+				'sentiment-result': res,
+				'sentence': sentence,
+				sentiment: getSentimentString(res.score)
+			});
 		});
 		// res.end();
 		res.json(response);
@@ -98,4 +103,13 @@ router.get('/words', (req, res) => {
 		});
 });
 
+function getSentimentString(score){
+	if(score === 0){
+		return 'neutral'
+	} else if(score > 0){
+		return 'positive'
+	} else if (score < 0){
+		return 'negative'
+	}
+}
 module.exports = router;
