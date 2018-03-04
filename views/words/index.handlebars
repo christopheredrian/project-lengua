@@ -32,7 +32,7 @@
                 <br>
                 <small>\{{ word.date }} </small>
                 <a v-bind:href="'/words/edit/' + word._id" class="btn btn-dark btn-block mb-2">Edit</a>
-                <form action="/words/delete/{{ word._id }}" method="post">
+                <form :action="'/words/delete/' +  word._id " method="post">
                     <input type="submit" class="btn btn-block btn-danger" value="Delete">
                 </form>
             </li>
