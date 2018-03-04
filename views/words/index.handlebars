@@ -1,8 +1,9 @@
 <div class="row">
     <h2 class="col-10">Word Listing</h2>
-    <a class="btn btn-success mb-4 float-right col-2" href="/words/add" >Add Word</a>
+    <a class="btn btn-success mb-4 float-right col-2" href="/words/add">Add Word</a>
 </div>
 
+{{!--
 <div class="row">
     {{#each words}}
     <ul class="list-group col-3">
@@ -18,4 +19,56 @@
         </li>
     </ul>
     {{else}} No words listed {{/each}}
+</div> --}}
+<div id="app">
+    <div class="row mb-3">
+        <input class="form-control col-3" type="text" v-model="search" placeholder="Search...">
+
+    </div>
+    <div class="row">
+            <li v-for="word in words" class="list-group-item mr-3">
+                <strong>\{{ word.word }}</strong> (\{{ word.score}})
+                <br> \{{ word.dialect }}
+                <br>
+                <small>\{{ word.date }} </small>
+                <a v-bind:href="'/words/edit/' + word._id" class="btn btn-dark btn-block mb-2">Edit</a>
+                <form action="/words/delete/{{ word._id }}" method="post">
+                    <input type="submit" class="btn btn-block btn-danger" value="Delete">
+                </form>
+            </li>
+
+    </div>
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!',
+            words: [],
+            search: ''
+        },
+        methods: {
+            getWords: function (word) {
+                // GET /someUrl
+                this.$http.get('/api/words', { params: { word: word } }).then(response => {
+                    // get body data
+                    this.words = JSON.parse(response.bodyText);
+                }, response => {
+                    // error callback
+                });
+            }
+        },
+        watch: {
+            search: function (val, oldValue) {
+                this.getWords(val);
+            }
+        },
+        beforeMount() {
+            this.getWords('');
+        }
+    })
+</script>

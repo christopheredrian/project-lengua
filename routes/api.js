@@ -37,8 +37,10 @@ router.post('/sentiment/sentence', (req, res) => {
 
 router.post('/sentiment/sentences', (req, res) => {
 	// Add the word list
-	if(!isJsonString(req.body.sentences)){
-		res.json({ error: 'json invalid'});
+	if (!isJsonString(req.body.sentences)) {
+		res.json({
+			error: 'json invalid'
+		});
 	}
 	let obj = JSON.parse(req.body.sentences);
 	let response = [];
@@ -57,5 +59,38 @@ function isJsonString(str) {
 	}
 	return true;
 }
+
+/** Words */
+router.get('/words', (req, res) => {
+	console.log(!!req.query.word);
+	var search = {};
+	if (!!req.query.word) {
+		search = {
+			$or: [{
+					word: {
+						$regex: '.*' + req.query.word + '.*'
+					}
+				},
+				{
+					dialect: {
+						$regex: '.*' + req.query.word + '.*'
+					}
+				}
+			]
+		}
+	} else {
+		search = {};
+	}
+
+	console.log(search);
+	Word.find(search)
+		.sort({
+			date: 'desc'
+		})
+		.then(words => {
+			res.json(words);
+
+		});
+});
 
 module.exports = router;

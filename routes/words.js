@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const { ensureAuthenticated } = require('../helpers/auth');
+const {
+    ensureAuthenticated
+} = require('../helpers/auth');
 // Load word model
 require('../models/Word');
 const Word = mongoose.model('words');
@@ -12,15 +14,19 @@ router.get('/add', ensureAuthenticated, (req, res) => {
 
 router.get('/edit/:id', ensureAuthenticated, (req, res) => {
     Word.findOne({
-        _id: req.params.id
-    })
+            _id: req.params.id
+        })
         .then((word) => {
-            res.render('words/edit', { word });
+            res.render('words/edit', {
+                word
+            });
         });
 });
 
 router.post('/update/:id', ensureAuthenticated, (req, res) => {
-    Word.findOne({ _id: req.params.id })
+    Word.findOne({
+            _id: req.params.id
+        })
         .then(word => {
             word.word = req.body.word.toLowerCase();
             word.score = req.body.score;
@@ -34,7 +40,9 @@ router.post('/update/:id', ensureAuthenticated, (req, res) => {
 });
 
 router.post('/delete/:id', ensureAuthenticated, (req, res) => {
-    Word.remove({ _id: req.params.id })
+    Word.remove({
+            _id: req.params.id
+        })
         .then(() => {
             req.flash('success_msg', 'Word Removed');
             res.redirect('/words');
@@ -43,7 +51,9 @@ router.post('/delete/:id', ensureAuthenticated, (req, res) => {
 
 router.get('/', ensureAuthenticated, (req, res) => {
     Word.find({})
-        .sort({ date: 'desc' })
+        .sort({
+            date: 'desc'
+        })
         .then(words => {
             res.render('words/index', {
                 words
@@ -55,13 +65,19 @@ router.post('/', ensureAuthenticated, (req, res) => {
     // validation
     let errors = [];
     if (!req.body.word) {
-        errors.push({ text: 'Please add a word' });
+        errors.push({
+            text: 'Please add a word'
+        });
     }
     if (!req.body.dialect) {
-        errors.push({ text: 'Please add a dialect' });
+        errors.push({
+            text: 'Please add a dialect'
+        });
     }
     if (!req.body.score) {
-        errors.push({ text: 'Please add a score' });
+        errors.push({
+            text: 'Please add a score'
+        });
     }
     if (errors.length > 0) {
         res.render('words/add', {
