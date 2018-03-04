@@ -36,19 +36,24 @@ router.post('/sentiment/sentence', (req, res) => {
 });
 
 router.post('/sentiment/sentences', (req, res) => {
-	// Add the word list
-	if (!isJsonString(req.body.sentences)) {
-		res.json({
-			error: 'json invalid'
+	try {
+		console.log(req.body.sentences);
+		// Add the word list
+		if (!isJsonString(req.body.sentences)) {
+			res.json({
+				error: 'json invalid'
+			});
+		}
+		let obj = JSON.parse(req.body.sentences);
+		let response = [];
+		obj.sentences.forEach((sentence) => {
+			response.push(sentiment(sentence));
 		});
+		// res.end();
+		res.json(response);
+	} catch (error) {
+		res.json(error)
 	}
-	let obj = JSON.parse(req.body.sentences);
-	let response = [];
-	obj.sentences.forEach((sentence) => {
-		response.push(sentiment(sentence));
-	});
-	// res.end();
-	res.json(response);
 });
 
 function isJsonString(str) {
