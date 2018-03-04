@@ -46,16 +46,29 @@ router.post('/sentiment/sentences', (req, res) => {
 		}
 		let obj = JSON.parse(req.body.sentences);
 		let response = [];
-		obj.sentences.forEach((sentence) => {
-			let res = sentiment(sentence);
-			response.push({
-				'sentiment-result': res,
-				'sentence': sentence,
-				sentiment: getSentimentString(res.score)
+		Word.find({}, {
+			'word': 1,
+			'score': 1,
+			_id: 0
+		})
+		.then(words => {
+			localDictionary = {};
+			// TODO: use query instead
+			words.forEach((word) => {
+				localDictionary[word.word] = word.score;
 			});
+			obj.sentences.forEach((sentence) => {
+				let res = sentiment(sentence,localDictionary);
+				response.push({
+					'sentiment-result': res,
+					'sentence': sentence,
+					sentiment: getSentimentString(res.score)
+				});
+			});
+			// res.end();
+			res.json(response);
 		});
-		// res.end();
-		res.json(response);
+		
 	} catch (error) {
 		res.json(error)
 	}
