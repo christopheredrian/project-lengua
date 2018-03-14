@@ -11,6 +11,14 @@ router.get('/', (req, res) => {
 	res.render('api/index');
 });
 
+router.get('/dialects', (req, res) => {
+	Word.find()
+		.distinct('dialect')
+		.then((dialects) => {
+			return res.json(dialects);
+		});
+});
+
 router.get('/sentiment/sentence', (req, res) => {
 	// Add the word list
 	Word.find({}, {
@@ -47,28 +55,28 @@ router.post('/sentiment/sentences', (req, res) => {
 		let obj = JSON.parse(req.body.sentences);
 		let response = [];
 		Word.find({}, {
-			'word': 1,
-			'score': 1,
-			_id: 0
-		})
-		.then(words => {
-			localDictionary = {};
-			// TODO: use query instead
-			words.forEach((word) => {
-				localDictionary[word.word] = word.score;
-			});
-			obj.sentences.forEach((sentence) => {
-				let res = sentiment(sentence,localDictionary);
-				response.push({
-					'sentiment-result': res,
-					'sentence': sentence,
-					sentiment: getSentimentString(res.score)
+				'word': 1,
+				'score': 1,
+				_id: 0
+			})
+			.then(words => {
+				localDictionary = {};
+				// TODO: use query instead
+				words.forEach((word) => {
+					localDictionary[word.word] = word.score;
 				});
+				obj.sentences.forEach((sentence) => {
+					let res = sentiment(sentence, localDictionary);
+					response.push({
+						'sentiment-result': res,
+						'sentence': sentence,
+						sentiment: getSentimentString(res.score)
+					});
+				});
+				// res.end();
+				res.json(response);
 			});
-			// res.end();
-			res.json(response);
-		});
-		
+
 	} catch (error) {
 		res.json(error)
 	}
@@ -88,6 +96,7 @@ router.get('/words', (req, res) => {
 	console.log(!!req.query.word);
 	var search = {};
 	if (!!req.query.word) {
+
 		search = {
 			$or: [{
 					word: {
@@ -101,10 +110,32 @@ router.get('/words', (req, res) => {
 				}
 			]
 		}
+
+
 	} else {
 		search = {};
 	}
+	if (!!req.query.dialect) {
+		if (!!req.query.word) {
+			search = {
+				$and: [{
+						'dialect': req.query.dialect
 
+					},
+					{
+						'word': {
+							$regex: '.*' + req.query.word + '.*'
+						}
+					}
+				]
+			}
+		} else {
+			search = {
+				'dialect': req.query.dialect
+			}
+		}
+
+	}
 	console.log(search);
 	Word.find(search)
 		.sort({
@@ -116,12 +147,12 @@ router.get('/words', (req, res) => {
 		});
 });
 
-function getSentimentString(score){
-	if(score === 0){
+function getSentimentString(score) {
+	if (score === 0) {
 		return 'neutral'
-	} else if(score > 0){
+	} else if (score > 0) {
 		return 'positive'
-	} else if (score < 0){
+	} else if (score < 0) {
 		return 'negative'
 	}
 }

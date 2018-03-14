@@ -20,22 +20,37 @@
     </ul>
     {{else}} No words listed {{/each}}
 </div> --}}
+
+
 <div id="app">
     <div class="row mb-3">
         <input class="form-control col-3" type="text" v-model="search" placeholder="Search...">
 
     </div>
     <div class="row">
-            <li v-for="word in words" class="list-group-item mr-3">
-                <strong>\{{ word.word }}</strong> (\{{ word.score}})
-                <br> \{{ word.dialect }}
-                <br>
-                <small>\{{ word.date }} </small>
-                <a v-bind:href="'/words/edit/' + word._id" class="btn btn-dark btn-block mb-2">Edit</a>
-                <form :action="'/words/delete/' +  word._id " method="post">
-                    <input type="submit" class="btn btn-block btn-danger" value="Delete">
-                </form>
-            </li>
+        <div class="col-2">
+            <ul class="nav flex-column">
+                <li class="nav-item" v-for="dialect in dialects">
+                    <a v-on:click.stop="getWords(search, dialect)" class="nav-link" href="#">\{{ dialect }}</a>
+                </li>
+               
+            </ul>
+        </div>
+        <ul class="col-10">
+            <div class="row">
+                <li v-for="word in words" class="list-group-item mr-3">
+                    <strong>\{{ word.word }}</strong> (\{{ word.score}})
+                    <br> \{{ word.dialect }}
+                    <br>
+                    <small>\{{ word.date }} </small>
+                    <a v-bind:href="'/words/edit/' + word._id" class="btn btn-dark btn-block mb-2">Edit</a>
+                    <form :action="'/words/delete/' +  word._id " method="post">
+                        <input type="submit" class="btn btn-block btn-danger" value="Delete">
+                    </form>
+                </li>
+            </div>
+
+        </ul>
 
     </div>
 </div>
@@ -49,26 +64,44 @@
         data: {
             message: 'Hello Vue!',
             words: [],
-            search: ''
+            search: '',
+            dialects: [],
+            dialect: ''
         },
         methods: {
-            getWords: function (word) {
+            getWords: function (word, dialect) {
+                this.dialect = dialect;
+                if(!dialect){
+                    dialect = null
+                }
                 // GET /someUrl
-                this.$http.get('/api/words', { params: { word: word } }).then(response => {
+                this.$http.get('/api/words', { params: { word: word, dialect: dialect } }).then(response => {
                     // get body data
                     this.words = JSON.parse(response.bodyText);
                 }, response => {
                     // error callback
+                    alert('Unable to get words...');
+                });
+            },
+            getDialects: function () {
+                this.$http.get('/api/dialects', {}).then(response => {
+                    // get body data
+                    this.dialects = JSON.parse(response.bodyText);
+                }, response => {
+                    // error callback
+                    alert('Unable to get dialects...');
                 });
             }
         },
         watch: {
             search: function (val, oldValue) {
-                this.getWords(val);
+                this.getWords(val, this.dialect);
+                
             }
         },
         beforeMount() {
             this.getWords('');
+            this.getDialects();
         }
     })
 </script>
