@@ -41,7 +41,32 @@
         </div>
         <ul class="col-10">
             <div class="row">
-                <li v-for="word in words" class="list-group-item mr-3">
+                <table id="wordsTable" class="table table-sm ">
+                    <thead>
+                        <tr>
+                            <th>Word</th>
+                            <th>Score</th>
+                            <th>Dialect</th>
+                            <th>Date Added</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-hover">
+                        <tr v-for="word in words">
+                            <td>\{{ word.word }}</td>
+                            <td>\{{ word.score}}</td>
+                            <td>\{{ word.dialect }}</td>
+                            <td>\{{ word.date }}</td>
+                            <td>
+                                <a v-bind:href="'/words/edit/' + word._id" class="btn btn-xs btn-dark btn-block mb-2">Edit</a>
+                                <form :action="'/words/delete/' +  word._id " method="post">
+                                    <input type="submit" class="btn btn-block btn-danger btn-xs" value="Delete">
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                {{!-- <li v-for="word in words" class="list-group-item mr-3">
                     <strong>\{{ word.word }}</strong> (\{{ word.score}})
                     <br> \{{ word.dialect }}
                     <br>
@@ -50,7 +75,7 @@
                     <form :action="'/words/delete/' +  word._id " method="post">
                         <input type="submit" class="btn btn-block btn-danger" value="Delete">
                     </form>
-                </li>
+                </li> --}}
             </div>
 
         </ul>
@@ -61,6 +86,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jq-3.2.1/dt-1.10.16/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jq-3.2.1/dt-1.10.16/datatables.min.js"></script>
+
 <script>
     var app = new Vue({
         el: '#app',
@@ -107,4 +136,9 @@
             this.getDialects();
         }
     })
+</script>
+<script>
+    $(document).ready(function () {
+        $('#wordsTable').DataTable();
+    });
 </script>
