@@ -30,10 +30,13 @@
     <div class="row">
         <div class="col-2">
             <ul class="nav flex-column">
-                <li class="nav-item" v-for="dialect in dialects">
-                    <a v-on:click.stop="getWords(search, dialect)" class="nav-link" href="#">\{{ dialect }}</a>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" v-on:click.stop="getWords(search, 'unlisted')">Unlisted</a>
                 </li>
-               
+                <li class="nav-item" v-for="dialect in dialects">
+                    <a v-if="dialect !== 'unlisted'" v-on:click.stop="getWords(search, dialect)" class="nav-link" href="#">\{{ dialect }}</a>
+                </li>
+
             </ul>
         </div>
         <ul class="col-10">
@@ -71,7 +74,7 @@
         methods: {
             getWords: function (word, dialect) {
                 this.dialect = dialect;
-                if(!dialect){
+                if (!dialect) {
                     dialect = null
                 }
                 // GET /someUrl
@@ -96,7 +99,7 @@
         watch: {
             search: function (val, oldValue) {
                 this.getWords(val, this.dialect);
-                
+
             }
         },
         beforeMount() {
