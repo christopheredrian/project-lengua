@@ -165,12 +165,19 @@ function isJsonString(str) {
 router.get('/words', (req, res) => {
 	console.log(!!req.query.word);
 	var search = {};
+	// letter = 'a';
+	letter = '';
+	if (!!req.query.letter) {
+		letter = req.query.letter.toLowerCase();
+	}
+	console.log(letter);
+	console.log(req.query.word);
 	if (!!req.query.word) {
 
 		search = {
 			$or: [{
 				word: {
-					$regex: '.*' + req.query.word + '.*'
+					$regex: '^' + letter + '.*'
 				}
 			},
 			{
@@ -180,32 +187,50 @@ router.get('/words', (req, res) => {
 			}
 			]
 		}
-
-
 	} else {
-		search = {};
-	}
-	if (!!req.query.dialect) {
-		if (!!req.query.word) {
-			search = {
-				$and: [{
-					'dialect': req.query.dialect
+		if (!!req.query.dialect) {
+			// if (!!req.query.word) {
+			if (!!req.query.word) {
+				search = {
+					$and: [{
+						'dialect': req.query.dialect
 
-				},
-				{
-					'word': {
-						$regex: '.*' + req.query.word + '.*'
+					},
+					{
+						'word': {
+							$regex: '.*' + req.query.word + '.*'
+						}
 					}
+					]
 				}
-				]
+			} else if (!!req.query.letter) {
+				search = {
+					$and: [{
+						'dialect': req.query.dialect
+
+					},
+					{
+						'word': {
+							$regex: '^' + letter + '.*'
+						}
+					}
+					]
+				}
+			} else {
+				search = {
+					'dialect': req.query.dialect
+				}
 			}
 		} else {
 			search = {
-				'dialect': req.query.dialect
-			}
-		}
+				'word': {
+					$regex: '^' + letter + '.*'
+				}
+			};
 
+		}
 	}
+
 	console.log(search);
 	Word.find(search)
 		.sort({

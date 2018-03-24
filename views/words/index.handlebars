@@ -25,18 +25,33 @@
 <div id="app">
     <div class="row">
         <div class="col-12 mb-3">
-            <input  class="float-right form-control col-4" type="text" v-model="search" placeholder="Search...">
+            <input class="float-right form-control col-4" type="text" v-model="search" placeholder="Search word...">
+        </div>
+        <div class="col-12">
+            <ul class="list-inline float-right">
+                <li v-for="l in letters" class="list-inline-item">
+                    <a v-bind:class="['social-icon text-xs-center', {'btn btn-primary active' : l.toLowerCase() === letter }]" v-on:click.stop="getWords(search, dialect, l)"
+                        href="#">\{{ l }}</a>
+                </li>
+                <li class="list-inline-item">
+                    <a class="social-icon text-xs-center btn btn-danger btn-xs" v-on:click.stop="getWords('', dialect)" href="#">Clear Letter Filtering</a>
+                </li>
+            </ul>
         </div>
     </div>
     <div class="row m-1">
         <div class="col-2">
-            <h3 class="page-header">Dialects</h3>
-            <ul class="nav flex-column">
+            <h3>Dialects</h3>
+            <ul class="nav nav-pills flex-column">
                 <li class="nav-item">
-                    <a href="#" class="nav-link" v-on:click.stop="getWords(search, 'unlisted')">Unlisted</a>
+                    <a v-bind:class="['nav-link', {'active' : '' === dialect }]" href="#" v-on:click.stop="getWords('', '')">All</a>
                 </li>
-                <li class="nav-item" v-for="dialect in dialects">
-                    <a v-if="dialect !== 'unlisted'" v-on:click.stop="getWords(search, dialect)" class="nav-link" href="#">\{{ dialect }}</a>
+                <li class="nav-item">
+                    <a v-bind:class="['nav-link', {'active' : 'unlisted' === dialect }]" href="#" v-on:click.stop="getWords(search, 'unlisted')">Unlisted</a>
+                </li>
+                <li class="nav-item" v-for="d in dialects">
+                    <a v-bind:class="['nav-link', {'active' : d === dialect }]" v-if="d !== 'unlisted' && d !== ''" v-on:click.stop="getWords(search, d)"
+                        href="#">\{{ d }}</a>
                 </li>
 
             </ul>
@@ -89,8 +104,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script> {{!--
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jq-3.2.1/dt-1.10.16/datatables.min.css"
-/> --}} {{!--
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jq-3.2.1/dt-1.10.16/datatables.min.css" /> --}} {{!--
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jq-3.2.1/dt-1.10.16/datatables.min.js"></script> --}}
 
 <script>
@@ -99,18 +113,30 @@
         data: {
             message: 'Hello Vue!',
             words: [],
+            letter: '',
             search: '',
             dialects: [],
-            dialect: ''
+            dialect: '',
+            letters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
         },
         methods: {
-            getWords: function (word, dialect) {
+            getWords: function (word, dialect, letter) {
                 this.dialect = dialect;
                 if (!dialect) {
                     dialect = null
                 }
+                if (!letter) {
+                    this.letter = '';
+                } else {
+                    this.letter = letter.toLowerCase();
+                }
+
+                word = this.search;
+                dialect = this.dialect;
+                letter = this.letter;
+                console.log(word, dialect, letter);
                 // GET /someUrl
-                this.$http.get('/api/words', { params: { word: word, dialect: dialect } }).then(response => {
+                this.$http.get('/api/words', { params: { word: word, dialect: dialect, letter: letter } }).then(response => {
                     // get body data
 
                     this.words = JSON.parse(response.bodyText);
@@ -132,13 +158,17 @@
         },
         watch: {
             search: function (val, oldValue) {
-                this.getWords(val, this.dialect);
-
+                this.search = val;
+                this.letter = '';
+                this.getWords(val, this.dialect, this.letter);
             }
         },
         beforeMount() {
             this.getWords('');
             this.getDialects();
+        },
+        mounted(){
+            this.dialect = '';
         }
     })
 </script>
