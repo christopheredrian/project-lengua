@@ -181,7 +181,7 @@ router.get('/words', (req, res) => {
 				}
 			},
 			{
-				dialect: req.query.dialect
+				dialect: req.query.dialect || new RegExp(".*")
 			}
 			]
 		}
