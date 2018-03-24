@@ -98,7 +98,7 @@ router.get('/sentiment/sentence', (req, res) => {
 			localDictionary = {};
 			// TODO: use query instead
 			words.forEach((word) => {
-				localDictionary[word.word] = word.score;
+				localDictionary[word.word] = word.score || 0;
 			});
 			res.json(sentiment(req.query.sentence, localDictionary));
 		});
@@ -131,11 +131,12 @@ router.post('/sentiment/sentences', (req, res) => {
 				localDictionary = {};
 				// TODO: use query instead
 				words.forEach((word) => {
-					localDictionary[word.word] = word.score;
+					localDictionary[word.word] = word.score || 0;
 				});
 				obj.sentences.forEach((sentence) => {
 					// Add unlisted words
-					addToDictionary(sentence)
+					addToDictionary(sentence);
+					console.log(localDictionary);
 					let res = sentiment(sentence, localDictionary);
 					response.push({
 						'sentiment-result': res,
