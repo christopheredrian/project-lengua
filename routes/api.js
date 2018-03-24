@@ -175,15 +175,13 @@ router.get('/words', (req, res) => {
 	if (!!req.query.word) {
 
 		search = {
-			$or: [{
+			$and: [{
 				word: {
-					$regex: '^' + letter + '.*'
+					$regex: '.*' + req.query.word + '.*'
 				}
 			},
 			{
-				dialect: {
-					$regex: '.*' + req.query.word + '.*'
-				}
+				dialect: req.query.dialect
 			}
 			]
 		}
