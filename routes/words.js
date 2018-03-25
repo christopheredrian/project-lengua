@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const fs = require('fs');
+
 const {
     ensureAuthenticated
 } = require('../helpers/auth');
@@ -101,6 +103,12 @@ router.post('/', ensureAuthenticated, (req, res) => {
             });
         // res.send(req.body);
     }
+});
+
+router.get('/afinn-165', (req, res) => {
+    var path = require('path')
+    const afinn = fs.readFileSync(path.join(__dirname, '../lib/AFINN-en-165.txt'));
+    res.send(afinn);
 });
 
 module.exports = router;
