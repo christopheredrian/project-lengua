@@ -8,6 +8,10 @@ const afinn165 = require('../lib/AFINN.json');
 require('../models/Word');
 const Word = mongoose.model('words');
 
+const {
+	ensureAuthenticated
+} = require('../helpers/auth');
+
 // TODO: Refactor to helpers
 /**
  * Returns true if the word is in the afin165 list
@@ -199,7 +203,7 @@ function isJsonString(str) {
 	return true;
 }
 
-/** Words */
+/** Get Words */
 router.get('/words', (req, res) => {
 	console.log(!!req.query.word);
 	var search = {};
@@ -279,6 +283,28 @@ router.get('/words', (req, res) => {
 		});
 });
 
+/**
+ * Update API 
+ */
+router.post('/words/update', ensureAuthenticated, (req, res) => {
+	Word.findOne({
+		_id: req.body.id
+	})
+		.then(word => {
+			word.word = req.body.word.toLowerCase();
+			word.score = req.body.score;
+			word.dialect = req.body.dialect;
+			word.save()
+				.then(word => {
+					res.json({ message: 'success' });
+				});
+		});
+});
+
+/**
+ * Helper method for getting the sentiment of a score
+ * @param {} score 
+ */
 function getSentimentString(score) {
 	if (score === 0) {
 		return 'neutral'
