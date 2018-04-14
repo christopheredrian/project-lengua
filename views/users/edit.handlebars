@@ -9,23 +9,25 @@
         <li class="breadcrumb-item">
             <a href="/users">Users</a>
         </li>
-        <li class="breadcrumb-item active">Register</li>
+        <li class="breadcrumb-item active">Edit User</li>
     </ol>
 </div>
 
 <div class="row">
     <div class="col-6 mx-auto">
         <div class="card card-body">
-            <h3 class="text-center">Account Register</h3>
-            <form action="/users/register" method="post">
+            <h3 class="text-center">User Edit</h3>
+            <form action="/users/update" method="post">
+                <input type="hidden" name="_id" value="{{user._id}}">
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input required type="name" name="name" value="{{name}}" class="form-control">
+                    <input required type="name" name="name" value="{{user.name}}" class="form-control">
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input required type="email" name="email" value="{{email}}" class="form-control">
+                    <input required type="email" name="email" value="{{user.email}}" class="form-control">
                 </div>
+                {{!--
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" name="password" class="form-control">
@@ -33,8 +35,8 @@
                 <div class="form-group">
                     <label for="confirm">Confirm Password</label>
                     <input type="password" name="confirm" class="form-control">
-                </div>
-                <button class="btn btn-primary float-right">Register</button>
+                </div> --}}
+                <button class="btn btn-primary float-right">Update</button>
             </form>
         </div>
     </div>
