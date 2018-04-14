@@ -3,25 +3,6 @@
     <a class="btn btn-success mb-4 float-right col-2" href="/words/add">Add Word</a>
 </div>
 
-{{!--
-<div class="row">
-    {{#each words}}
-    <ul class="list-group col-3">
-        <li class="list-group-item">
-            <strong>{{ word }}</strong> ({{ score}})
-            <br> {{ dialect }}
-            <br>
-            <small>{{moment date format="YYYY-MM-DD"}} </small>
-            <a href="/words/edit/{{ id }}" class="btn btn-dark btn-block mb-2">Edit</a>
-            <form action="/words/delete/{{id}}" method="post">
-                <input type="submit" class="btn btn-block btn-danger" value="Delete">
-            </form>
-        </li>
-    </ul>
-    {{else}} No words listed {{/each}}
-</div> --}}
-
-
 <div id="app">
     <div class="row">
         <div class="col-12 mb-3">
@@ -40,24 +21,26 @@
         </div>
     </div>
     <div class="row m-1">
-        <div class="col-2">
+        <div class="col-3">
             <h3>Languages</h3>
             <ul class="nav nav-pills flex-column">
-                <li><a class="nav-link"  href="/words/afinn-165" target="_blank">AFINN-165 </a></li>
-                <li class="nav-item">
-                    <a v-bind:class="['nav-link', {'active' : '' === dialect }]" href="#" v-on:click.stop="getWords('', '')">All</a>
+                <li>
+                    <a class="nav-link" href="/words/afinn-165" target="_blank">AFINN-165 </a>
                 </li>
                 <li class="nav-item">
-                    <a v-bind:class="['nav-link', {'active' : 'unlisted' === dialect }]" href="#" v-on:click.stop="getWords(search, 'unlisted')">Unlisted</a>
+                    <a v-bind:class="['nav-link', {'active' : '' === dialect }]" href="#" v-on:click.stop="getWords('', '')">All (\{{ totalWordCount }})</a>
+                </li>
+                <li class="nav-item">
+                    <a v-bind:class="['nav-link', {'active' : 'unlisted' === dialect }]" href="#" v-on:click.stop="getWords(search, 'unlisted')">Unlisted (\{{ totalUnlistedCount}})</a>
                 </li>
                 <li class="nav-item" v-for="d in dialects">
-                    <a v-bind:class="['nav-link', {'active' : d === dialect }]" v-if="d !== 'unlisted' && d !== ''" v-on:click.stop="getWords(search, d)"
-                        href="#">\{{ d }}</a>
+                    <a v-bind:class="['nav-link', {'active' : d._id.dialect === dialect }]" v-if="d._id.dialect !== 'unlisted' && d._id.dialect !== ''" v-on:click.stop="getWords(search, d._id.dialect)"
+                        href="#">\{{ d._id.dialect }} (\{{ d.count}})</a>
                 </li>
 
             </ul>
         </div>
-        <ul class="col-10">
+        <ul class="col-9">
             <div class="row">
                 <table id="wordsTable" class="table table-sm ">
                     <thead>
@@ -77,24 +60,13 @@
                             <td>\{{ word.date }}</td>
                             <td>
                                 <a v-bind:href="'/words/edit/' + word._id" class="btn btn-xs btn-dark btn-block mb-2">Edit</a>
-                                <form :action="'/words/delete/' +  word._id " method="post">
+                                <form :action="'/words/delete/' +  word._id " method="post" onclick="return confirm('Are you sure you want to delete this word?')">
                                     <input type="submit" class="btn btn-block btn-danger btn-xs" value="Delete">
                                 </form>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                {{!--
-                <li v-for="word in words" class="list-group-item mr-3">
-                    <strong>\{{ word.word }}</strong> (\{{ word.score}})
-                    <br> \{{ word.dialect }}
-                    <br>
-                    <small>\{{ word.date }} </small>
-                    <a v-bind:href="'/words/edit/' + word._id" class="btn btn-dark btn-block mb-2">Edit</a>
-                    <form :action="'/words/delete/' +  word._id " method="post">
-                        <input type="submit" class="btn btn-block btn-danger" value="Delete">
-                    </form>
-                </li> --}}
             </div>
 
         </ul>
@@ -118,7 +90,9 @@
             search: '',
             dialects: [],
             dialect: '',
-            letters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+            letters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
+            totalWordCount: 0,
+            totalUnlistedCount: 0
         },
         methods: {
             getWords: function (word, dialect, letter) {
@@ -139,9 +113,7 @@
                 // GET /someUrl
                 this.$http.get('/api/words', { params: { word: word, dialect: dialect, letter: letter } }).then(response => {
                     // get body data
-
                     this.words = JSON.parse(response.bodyText);
-
                 }, response => {
                     // error callback
                     alert('Unable to get words...');
@@ -149,11 +121,23 @@
             },
             getDialects: function () {
                 this.$http.get('/api/dialects', {}).then(response => {
-                    // get body data
                     this.dialects = JSON.parse(response.bodyText);
                 }, response => {
-                    // error callback
                     alert('Unable to get dialects...');
+                });
+            },
+            getTotalWordCount: function () {
+                this.$http.get('/api/totalWordCount', {}).then(response => {
+                    this.totalWordCount = JSON.parse(response.bodyText).totalWordCount;
+                }, response => {
+                    alert('Unable to get total word count...');
+                });
+            },
+            getTotalUnlistedCount: function () {
+                this.$http.get('/api/totalUnlistedCount', {}).then(response => {
+                    this.totalUnlistedCount = JSON.parse(response.bodyText).totalUnlistedCount;
+                }, response => {
+                    alert('Unable to get total unlisted word count...');
                 });
             }
         },
@@ -167,8 +151,11 @@
         beforeMount() {
             this.getWords('');
             this.getDialects();
+            this.getTotalWordCount();
+            this.getTotalUnlistedCount();
+
         },
-        mounted(){
+        mounted() {
             this.dialect = '';
         }
     })

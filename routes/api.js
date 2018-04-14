@@ -74,15 +74,52 @@ const addToDictionary = (sentence) => {
 };
 
 router.get('/', (req, res) => {
-	res.render('api/index');
+	res.render('api/index', );
 });
 
+
+/**
+ * Gets the total word count including the unlisted words
+ */
+router.get('/totalWordCount', (req, res) => {
+	Word.count({}, function (err, count) {
+		if (err) throw err;
+		return res.json({ totalWordCount: count })
+	});
+});
+
+/**
+ * Gets the total unlisted words count
+ */
+router.get('/totalUnlistedCount', (req, res) => {
+	Word.count({ dialect: 'unlisted' }, function (err, count) {
+		if (err) throw err;
+		console.log("TUC:" + count);
+		return res.json({ totalUnlistedCount: count })
+	});
+});
+
+/**
+ * Returns the dialects and their respective counts
+ */
 router.get('/dialects', (req, res) => {
-	Word.find()
-		.distinct('dialect')
-		.then((dialects) => {
-			return res.json(dialects);
-		});
+	// Word.find()
+	// 	.distinct('dialect')
+	// 	.then((dialects) => {
+	// 		return res.json(dialects);
+	// 	});
+	const aggregatorOpts = [
+		{
+			$group: {
+				_id: { dialect: "$dialect" },
+				count: { $sum: 1 }
+			}
+		}
+	]
+	Word.aggregate(aggregatorOpts).then((dialects) => {
+		console.log(dialects)
+		return res.json(dialects);
+	});
 });
 
 router.get('/sentiment/sentence', (req, res) => {
@@ -166,13 +203,13 @@ function isJsonString(str) {
 router.get('/words', (req, res) => {
 	console.log(!!req.query.word);
 	var search = {};
-	// letter = 'a';
 	letter = '';
 	if (!!req.query.letter) {
 		letter = req.query.letter.toLowerCase();
 	}
 	console.log(letter);
 	console.log(req.query.word);
+	// We have a word
 	if (!!req.query.word) {
 
 		search = {
@@ -187,8 +224,9 @@ router.get('/words', (req, res) => {
 			]
 		}
 	} else {
+		// We have a dialect
 		if (!!req.query.dialect) {
-			// if (!!req.query.word) {
+			// but we have a word
 			if (!!req.query.word) {
 				search = {
 					$and: [{
