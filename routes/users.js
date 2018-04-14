@@ -8,13 +8,14 @@ const passport = require('passport');
 require('../models/User');
 const User = mongoose.model('users');
 const {
-    ensureAuthenticated
+    ensureAuthenticated,
+    isAdmin
 } = require('../helpers/auth');
 
 /**
  * List all users
  */
-router.get('/', ensureAuthenticated, (req, res) => {
+router.get('/', ensureAuthenticated, isAdmin, (req, res) => {
     User.find({})
         .then((users) => {
             res.render('users/index', {
@@ -97,7 +98,7 @@ router.get('/edit/:id', ensureAuthenticated, (req, res) => {
 /**
  * User Update
  */
-router.post('/update', ensureAuthenticated, (req, res) => {
+router.post('/update', ensureAuthenticated, isAdmin, (req, res) => {
     User.findById(req.body._id, function (err, user) {
         if (err) throw err;
 
@@ -135,7 +136,7 @@ router.get('/logout', (req, res) => {
 /**
  * Delete user
  */
-router.post('/delete', ensureAuthenticated, (req, res) => {
+router.post('/delete', ensureAuthenticated, isAdmin, (req, res) => {
     User.remove({
             _id: req.body._id
         })

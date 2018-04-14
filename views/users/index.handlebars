@@ -15,6 +15,7 @@
         <tr>
             <th>Name</th>
             <th>Email</th>
+            <th>Role</th>
             <th>Date Created</th>
             <th>Action</th>
         </tr>
@@ -23,6 +24,7 @@
             <tr>
                 <td>{{ this.name }}</td>
                 <td>{{ this.email }}</td>
+                <td>{{ this.role }}</td>
                 <td>{{ this.date }}</td>
                 <td>
                     <a class="btn btn-warning" href="/users/edit/{{ this.id }}">Edit</a>
