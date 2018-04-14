@@ -8,25 +8,28 @@ const passport = require('passport');
 require('../models/User');
 const User = mongoose.model('users');
 
-router.get('/login', (req, res) => {
-    res.render('users/login');
+/**
+ * List all users
+ */
+router.get('/', (req, res) => {
+    User.find({})
+        .then((users) => {
+            res.render('users/index', {
+                users
+            });
+        });
 });
 
-router.post('/login', (req, res, next) => {
-    // passport-local
-    passport.authenticate('local', {
-        successRedirect: '/words',
-        failureRedirect: '/users/login',
-        failureFlash: true
-    })(req, res, next);
-
-    // res.render('users/login');
-});
-
+/**
+ * User creation
+ */
 router.get('/register', (req, res) => {
     res.render('users/register');
 });
 
+/**
+ * User create post
+ */
 router.post('/register', (req, res) => {
 
     let errors = [];
@@ -68,6 +71,21 @@ router.post('/register', (req, res) => {
                 }
             });
     }
+});
+
+router.get('/login', (req, res) => {
+    res.render('users/login');
+});
+
+router.post('/login', (req, res, next) => {
+    // passport-local
+    passport.authenticate('local', {
+        successRedirect: '/words',
+        failureRedirect: '/users/login',
+        failureFlash: true
+    })(req, res, next);
+
+    // res.render('users/login');
 });
 
 router.get('/logout',(req, res) => {

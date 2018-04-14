@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="col-10"></div>
+    <a href="/users/register" class="btn btn-success col-2 mb-2">Register New User</a>
+    
+</div>
+<div class="row">
+
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Date Created</th>
+            <th>Action</th>
+        </tr>
+        <tbody>
+            {{#each users}}
+            <tr>
+                <td>{{ this.name }}</td>
+                <td>{{ this.email }}</td>
+                <td>{{ this.date }}</td>
+                <td>
+                    <a class="btn btn-warning" href="/users/edit/{{ this.id }}">Edit</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+</div>
