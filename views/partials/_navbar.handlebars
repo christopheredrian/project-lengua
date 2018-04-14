@@ -21,24 +21,21 @@
             <ul class="navbar-nav ml-auto">
 
 
-                {{#if user}} {{!--
-                <li class="nav-item dropdown">
-                    <a href="" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navBarDropdownMenuLink">Lengua Words</a>
-                    <div class="dropdown-menu">
-                        <a href="/words" class="dropdown-item">Words</a>
-                        <a href="/words/add" class="dropdown-item">Add Word</a>
-                    </div>
-                </li> --}}
+                {{#if user}}
+                
                 <li class="nav-item">
                     <a href="/words" class="nav-link">Words</a>
                 </li>
                 <li class="nav-item">
                     <a href="/users" class="nav-link">Users</a>
                 </li>
-                <li class="nav-item">
-                    <a href="/users/logout" class="nav-link">Logout</a>
-                </li>
 
+                <li class="nav-item dropdown">
+                    <a href="" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navBarDropdownMenuLink">{{ user.name }}</a>
+                    <div class="dropdown-menu">
+                        <a href="/users/logout" class="dropdown-item">Logout</a>
+                    </div>
+                </li>
                 {{else}}
                 <li class="nav-item">
                     <a href="/users/login" class="nav-link">Login</a>
