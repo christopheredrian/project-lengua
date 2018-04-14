@@ -1,15 +1,16 @@
-{{#if error}}
-<div class="alert alert-danger">
-    {{first error }}
-</div>
+<div class="row">
+    {{#if error}}
+    <div class="alert alert-danger w-100">
+        {{first error }}
+    </div>
 
-{{/if}} 
-{{#if success_msg}}
-<div class="alert alert-success">
-    {{ success_msg}}
+    {{/if}} {{#if success_msg}}
+    <div class="alert alert-success w-100">
+        {{ success_msg}}
+    </div>
+    {{/if}} {{#if error_msg}}
+    <div class="alert alert-danger w-100">
+        {{ error_msg}}
+    </div>
+    {{/if}}
 </div>
-{{/if}} {{#if error_msg}}
-<div class="alert alert-danger">
-    {{ error_msg}}
-</div>
-{{/if}}

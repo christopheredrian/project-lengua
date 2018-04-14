@@ -132,4 +132,18 @@ router.get('/logout', (req, res) => {
     res.redirect('/users/login');
 });
 
+/**
+ * Delete user
+ */
+router.post('/delete', ensureAuthenticated, (req, res) => {
+    User.remove({
+            _id: req.body._id
+        })
+        .then(() => {
+            req.flash('success_msg', 'User Removed');
+            res.redirect('/users');
+        });
+});
+
+
 module.exports = router;
