@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12 mb-3">
             <div id="alerts">
-                
+
             </div>
             <input class="float-right form-control col-4" type="text" v-model="search" placeholder="Search word...">
         </div>
@@ -99,7 +99,7 @@
 
     </div>
     <div class="md">
-    
+
         <!-- Modal -->
         <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -113,7 +113,7 @@
                     <div class="modal-body">
                         <div class="card card-body">
                             <h3>Edit Word</h3>
-                            <form @submit="updateWord()" >
+                            <form @submit.prevent="updateWord()">
                                 <div class="form-group">
                                     <label for="word">Word</label>
                                     <input id="word" name="word" type="text" class="form-control" v-model="modalData.word" required>
@@ -140,7 +140,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button v-on:click="updateWord()"class="btn btn-primary" type="submit">Submit</button>
+                        <button v-on:click="updateWord()" class="btn btn-primary" type="submit">Submit</button>
                     </div>
                 </div>
             </div>
@@ -232,7 +232,11 @@
                     // Add message with link
                     $('#alerts').append('<div class="alert alert-warning alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Word updated!</strong>.</div>');
                     // Refresh word list
+                    // TODO: Bug fix here. Copy code above
                     this.getWords(this.search, this.dialect, this.letter);
+                    this.getDialects();
+                    this.getTotalWordCount();
+                    this.getTotalUnlistedCount();
                     // Empty modal
                     this.modalData = {};
                     // Close modal
