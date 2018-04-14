@@ -16,7 +16,13 @@ const {
  * List all users
  */
 router.get('/', ensureAuthenticated, isAdmin, (req, res) => {
-    User.find({})
+    let search = {};
+    if(req.user.email !== 'christopheredrian@gmail.com'){
+        search = {role: {
+            $not: /admin/
+        }}
+    }
+    User.find(search)
         .then((users) => {
             res.render('users/index', {
                 users
@@ -101,9 +107,9 @@ router.get('/edit/:id', ensureAuthenticated, (req, res) => {
 router.post('/update', ensureAuthenticated, isAdmin, (req, res) => {
     User.findById(req.body._id, function (err, user) {
         if (err) throw err;
-
         user.name = req.body.name;
         user.email = req.body.email;
+        user.role = req.body.role;
         user.save(function (err, updatedUser) {
             if (err) throw err;
             req.flash('success_msg', 'User Updated');
