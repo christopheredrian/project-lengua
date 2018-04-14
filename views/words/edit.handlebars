@@ -14,13 +14,16 @@
 
         <div class="form-group">
             <label for="dialect">Dialect</label>
-            <select class="form-control" name="dialect" id="dialect" value="{{ word.dialect}}" required >
+            <select class="form-control" name="dialect" id="dialect" required >
+                {{!-- {{#each dialects}}
+                    <option value="{{ this }}">{{ this }}</option>
+                {{/each}} --}}
                 <option value="">Please select a dialect/language</option>
-                <option value="filipino">Filipino/Tagalog</option>
-                <option value="kapampangan">Kapampangan</option>
-                <option value="ilocano">Ilocano</option>
-                <option value="pangasinan">Pangasinan</option>
-                <option value="english">English</option>
+                <option value="filipino" {{ isSelected 'filipino' word.dialect }}>Filipino</option>
+                <option value="kapampangan" {{ isSelected 'kapampangan' word.dialect }}>Kapampangan</option>
+                <option value="ilocano" {{ isSelected 'ilocano' word.dialect }}>Ilocano</option>
+                <option value="pangasinan" {{ isSelected 'pangasinan' word.dialect }}>Pangasinan</option>
+                <option value="english" {{ isSelected 'english' word.dialect }}>English</option>
             </select>
         </div>
         <div class="form-group">

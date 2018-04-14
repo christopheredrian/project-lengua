@@ -45,6 +45,9 @@ var hbs = exphbs.create({
 		},
 		first: function (object) {
 			return object[0];
+		},
+		isSelected: function(a, b){
+			return a === b ? 'selected' : '';  
 		}
 	}
 });

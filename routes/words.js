@@ -16,9 +16,11 @@ router.get('/add', ensureAuthenticated, (req, res) => {
 
 router.get('/edit/:id', ensureAuthenticated, (req, res) => {
     Word.findOne({
-            _id: req.params.id
-        })
+        _id: req.params.id
+    })
         .then((word) => {
+            Word.find()
+                .distinct('dialect')
             res.render('words/edit', {
                 word
             });
@@ -27,8 +29,8 @@ router.get('/edit/:id', ensureAuthenticated, (req, res) => {
 
 router.post('/update/:id', ensureAuthenticated, (req, res) => {
     Word.findOne({
-            _id: req.params.id
-        })
+        _id: req.params.id
+    })
         .then(word => {
             word.word = req.body.word.toLowerCase();
             word.score = req.body.score;
@@ -43,8 +45,8 @@ router.post('/update/:id', ensureAuthenticated, (req, res) => {
 
 router.post('/delete/:id', ensureAuthenticated, (req, res) => {
     Word.remove({
-            _id: req.params.id
-        })
+        _id: req.params.id
+    })
         .then(() => {
             req.flash('success_msg', 'Word Removed');
             res.redirect('/words');
