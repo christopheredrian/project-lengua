@@ -80,10 +80,10 @@
                             <td>\{{ word.dialect }}</td>
                             <td>\{{ word.date }}</td>
                             <td>
-                                <a v-bind:href="'/words/edit/' + word._id" class="btn btn-xs btn-dark btn-block mb-2">Edit</a>
+                                {{!-- <a v-bind:href="'/words/edit/' + word._id" class="btn btn-xs btn-dark btn-block mb-2">Edit</a> --}}
                                 <button v-on:click="editWord(word._id,word.word, word.score, word.dialect)" type="button" class="btn btn-xs btn-warning btn-block mb-2"
                                     data-toggle="modal" data-target="#updateModal">
-                                    Edit via Modal (Beta)
+                                    Edit
                                 </button>
                                 <form :action="'/words/delete/' +  word._id " method="post" onclick="return confirm('Are you sure you want to delete this word?')">
                                     <input type="submit" class="btn btn-block btn-danger btn-xs" value="Delete">
