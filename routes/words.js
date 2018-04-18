@@ -10,10 +10,16 @@ const {
 require('../models/Word');
 const Word = mongoose.model('words');
 
+/**
+ * Add words view
+ */
 router.get('/add', ensureAuthenticated, (req, res) => {
     res.render('words/add');
 });
 
+/**
+ * Edit words view
+ */
 router.get('/edit/:id', ensureAuthenticated, (req, res) => {
     Word.findOne({
         _id: req.params.id
@@ -27,6 +33,9 @@ router.get('/edit/:id', ensureAuthenticated, (req, res) => {
         });
 });
 
+/**
+ * Update word
+ */
 router.post('/update/:id', ensureAuthenticated, (req, res) => {
     Word.findOne({
         _id: req.params.id
@@ -43,6 +52,9 @@ router.post('/update/:id', ensureAuthenticated, (req, res) => {
         });
 });
 
+/**
+ * Word delete
+ */
 router.post('/delete/:id', ensureAuthenticated, (req, res) => {
     Word.remove({
         _id: req.params.id
@@ -53,6 +65,9 @@ router.post('/delete/:id', ensureAuthenticated, (req, res) => {
         });
 });
 
+/**
+ * Display words
+ */
 router.get('/', ensureAuthenticated, (req, res) => {
     Word.find({})
         .sort({
@@ -65,6 +80,9 @@ router.get('/', ensureAuthenticated, (req, res) => {
         });
 });
 
+/**
+ * Add word post request
+ */
 router.post('/', ensureAuthenticated, (req, res) => {
     // validation
     let errors = [];
@@ -107,6 +125,9 @@ router.post('/', ensureAuthenticated, (req, res) => {
     }
 });
 
+/**
+ * Route for getting the afinn text file
+ */
 router.get('/afinn-165', (req, res) => {
     var path = require('path')
     const afinn = fs.readFileSync(path.join(__dirname, '../lib/AFINN-en-165.txt'));

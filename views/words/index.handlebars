@@ -1,9 +1,12 @@
-<div class="row">
-    <h2 class="col-10">Word Listing</h2>
-    <a class="btn btn-success mb-4 float-right col-2" href="/words/add">Add Word</a>
-</div>
-
 <div id="app">
+    <div class="row">
+        <h2 class="col-10">Word Listing</h2>
+        {{!--
+        <button class="">Add Word</button> --}}
+        <button v-on:click="addWord()" type="button" class="btn btn-success mb-4 float-right col-2" data-toggle="modal" data-target="#modal">
+            Add Word
+        </button>
+    </div>
 
     <div class="row">
         <div class="col-12 mb-3">
@@ -80,9 +83,10 @@
                             <td>\{{ word.dialect }}</td>
                             <td>\{{ word.date }}</td>
                             <td>
-                                {{!-- <a v-bind:href="'/words/edit/' + word._id" class="btn btn-xs btn-dark btn-block mb-2">Edit</a> --}}
+                                {{!--
+                                <a v-bind:href="'/words/edit/' + word._id" class="btn btn-xs btn-dark btn-block mb-2">Edit</a> --}}
                                 <button v-on:click="editWord(word._id,word.word, word.score, word.dialect)" type="button" class="btn btn-xs btn-warning btn-block mb-2"
-                                    data-toggle="modal" data-target="#updateModal">
+                                    data-toggle="modal" data-target="#modal">
                                     Edit
                                 </button>
                                 <form :action="'/words/delete/' +  word._id " method="post" onclick="return confirm('Are you sure you want to delete this word?')">
@@ -99,13 +103,12 @@
 
     </div>
     <div class="md">
-
-        <!-- Modal -->
-        <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalTitle" aria-hidden="true">
+        <!-- Add/Update Modal -->
+        <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="updateModalTitle">Update Word</h5>
+                        <h5 class="modal-title" id="modalTitle">\{{ this.modalText }} Word</h5>
                         <button id="modalClose" type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -113,6 +116,10 @@
                     <div class="modal-body">
                         <div class="card card-body">
                             <h3>Edit Word</h3>
+                            {{!-- If there are errors display the list of errors --}}
+                            <ul v-if="modalErrors">
+                                <li class="text-danger" v-for="errorItem in modalErrors">\{{ errorItem.text }}</li>
+                            </ul>
                             <form @submit.prevent="updateWord()">
                                 <div class="form-group">
                                     <label for="word">Word</label>
@@ -167,12 +174,14 @@
             letters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
             totalWordCount: 0,
             totalUnlistedCount: 0,
+            modalText: 'Add',
             modalData: {
                 id: '',
                 word: 'unlisted',
                 score: 0,
                 dialect: 'unlisted'
-            }
+            },
+            modalErrors: []
         },
         methods: {
             getWords: function (word, dialect, letter) {
@@ -221,33 +230,74 @@
                 });
             },
             editWord: function (id, word, score, dialect) {
+                this.modalErrors = [];
                 // Populate modal
                 this.modalData = {
                     id, word, score, dialect
                 }
+                this.modalText = "Update";
             },
+            addWord: function () {
+                this.modalErrors = [];
+                // Populate modal
+                this.modalData = {
+                    word: '', score: '', dialect: ''
+                }
+                this.modalText = "Add";
+            },
+
+            // Modal Function for update and add word
             updateWord: function () {
-                // Post request to API
-                this.$http.post('/api/words/update', this.modalData).then(response => {
-                    // Add message with link
-                    $('#alerts').append('<div class="alert alert-warning alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Word updated!</strong>.</div>');
-                    // Refresh word list
-                    // TODO: Bug fix here. Copy code above
-                    this.getWords(this.search, this.dialect, this.letter);
-                    this.getDialects();
-                    this.getTotalWordCount();
-                    this.getTotalUnlistedCount();
-                    // Empty modal
-                    this.modalData = {};
-                    // Close modal
-                    $('#modalClose').click();
+                if (this.modalText === 'Add') {
+                    // Add word
+                    this.$http.post('/api/words/add', this.modalData).then(response => {
+                        // There was an error
+                        if (response.body.errors) {
+                            this.modalErrors = response.body.errors;
+                            $('#modal').modal('show');
+                        } else {
+                            // Add message with link
+                            $('#alerts').append('<div class="alert alert-warning alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Word added!</strong>.</div>');
+                            // Refresh word list
+                            this.refreshWords();
+                            // Close modal
+                            $('#modalClose').click();
+                        }
 
-                }, response => {
-                    alert('Unable to get dialects...' + JSON.stringify(response));
-                });
+                    }, response => {
+                        alert('There was an error.' + JSON.stringify(response));
+                    });
+                } else if (this.modalText === 'Update') {
+                    // Update word
+                    this.$http.post('/api/words/update', this.modalData).then(response => {
+                        if (response.body.errors) {
+                            this.modalErrors = response.body.errors;
+                            $('#modal').modal('show');
+                        } else {
+                            $('#alerts').append('<div class="alert alert-warning alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Word updated!</strong>.</div>');
+                            // Refresh word list
+                            this.refreshWords();
+                            // Close modal
+                            $('#modalClose').click();
+                        }
+                        // Add message with link
 
+                    }, response => {
+                        alert('Unable to get dialects...' + JSON.stringify(response));
+                    });
+                } else {
+                    alert('There was an error');
+                }
 
-
+            },
+            // Utility function for refreshing word list
+            refreshWords: function () {
+                this.getWords(this.search, this.dialect, this.letter);
+                this.getDialects();
+                this.getTotalWordCount();
+                this.getTotalUnlistedCount();
+                // Empty modal
+                this.modalData = {};
 
             }
         },

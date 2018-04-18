@@ -107,11 +107,6 @@ router.get('/totalUnlistedCount', (req, res) => {
  * Returns the dialects and their respective counts
  */
 router.get('/dialects', (req, res) => {
-	// Word.find()
-	// 	.distinct('dialect')
-	// 	.then((dialects) => {
-	// 		return res.json(dialects);
-	// 	});
 	const aggregatorOpts = [
 		{
 			$group: {
@@ -126,6 +121,10 @@ router.get('/dialects', (req, res) => {
 	});
 });
 
+/**
+ * Get the sentiment of a sentence
+ * @return JSON object
+ */
 router.get('/sentiment/sentence', (req, res) => {
 	// Add the word list
 	addToDictionary(req.query.sentence)
@@ -147,11 +146,17 @@ router.get('/sentiment/sentence', (req, res) => {
 	// res.json(result);
 });
 
-
+/**
+ * Returns the sentiment of a sentence
+ */
 router.post('/sentiment/sentence', (req, res) => {
+	// TODO: similar to the get request above
 	res.send('TBI');
 });
 
+/**
+ * Returns the sentiment of sentences
+ */
 router.post('/sentiment/sentences', (req, res) => {
 	try {
 		console.log(req.body.sentences);
@@ -194,6 +199,10 @@ router.post('/sentiment/sentences', (req, res) => {
 	}
 });
 
+/**
+ * Utility for determining if a string is JSON
+ * @param {} str 
+ */
 function isJsonString(str) {
 	try {
 		JSON.parse(str);
@@ -203,7 +212,9 @@ function isJsonString(str) {
 	return true;
 }
 
-/** Get Words */
+/**
+ * Get all words, returns a JSON object of words
+ */
 router.get('/words', (req, res) => {
 	console.log(!!req.query.word);
 	var search = {};
@@ -284,23 +295,81 @@ router.get('/words', (req, res) => {
 });
 
 /**
+ * Add a word
+ */
+router.post('/words/add', ensureAuthenticated, (req, res) => {
+	// validations
+	let errors = [];
+	if (wordValid(req, res)) {
+		// No errors - add the new rod
+		const newWord = {
+			word: req.body.word.toLowerCase(),
+			dialect: req.body.dialect,
+			score: req.body.score,
+			user: req.user.id
+		}
+		new Word(newWord)
+			.save()
+			.then((word) => {
+				req.flash('success_msg', 'Word Added');
+				res.redirect('/words')
+			});
+	}
+
+});
+
+/**
  * Update API 
  */
 router.post('/words/update', ensureAuthenticated, (req, res) => {
-	Word.findOne({
-		_id: req.body.id
-	})
-		.then(word => {
-			word.word = req.body.word.toLowerCase();
-			word.score = req.body.score;
-			word.dialect = req.body.dialect;
-			word.save()
-				.then(word => {
-					res.json({ message: 'success' });
-				});
-		});
+	if (wordValid(req, res)) {
+		Word.findOne({
+			_id: req.body.id
+		})
+			.then(word => {
+				word.word = req.body.word.toLowerCase();
+				word.score = req.body.score;
+				word.dialect = req.body.dialect;
+				word.save()
+					.then(word => {
+						res.json({ message: 'success' });
+					});
+			});
+	}
 });
 
+/**
+ * Helper method for word validation
+ */
+function wordValid(req, res) {
+	let errors = [];
+	if (!req.body.word) {
+		errors.push({
+			text: 'Please add a word'
+		});
+	}
+	if (!req.body.dialect) {
+		errors.push({
+			text: 'Please add a dialect'
+		});
+	}
+	if (!req.body.score) {
+		errors.push({
+			text: 'Please add a score'
+		});
+	}
+	// We have errors
+	if (errors.length > 0) {
+		res.json({
+			errors: errors,
+			word: req.body.word,
+			dialect: req.body.dialect,
+			score: req.body.score
+		});
+	} else {
+		return true;
+	}
+}
 /**
  * Helper method for getting the sentiment of a score
  * @param {} score 

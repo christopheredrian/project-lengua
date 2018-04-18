@@ -118,10 +118,16 @@ router.post('/update', ensureAuthenticated, isAdmin, (req, res) => {
     });
 });
 
+/**
+ * Returns the login view 
+ */
 router.get('/login', (req, res) => {
     res.render('users/login');
 });
 
+/**
+ * Authenticates the user
+ */
 router.post('/login', (req, res, next) => {
     // passport-local
     passport.authenticate('local', {
@@ -133,6 +139,9 @@ router.post('/login', (req, res, next) => {
     // res.render('users/login');
 });
 
+/**
+ * Route for logging out user
+ */
 router.get('/logout', (req, res) => {
     req.logout();
     req.flash('success_msg', 'You are logged out')
