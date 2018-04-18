@@ -339,6 +339,18 @@ router.post('/words/update', ensureAuthenticated, (req, res) => {
 });
 
 /**
+ * Word delete
+ */
+router.post('/words/delete/:id', ensureAuthenticated, (req, res) => {
+	Word.remove({
+		_id: req.params.id
+	})
+		.then(() => {
+			res.json({ 'message': 'Successfully deleted message' });
+		});
+});
+
+/**
  * Helper method for word validation
  */
 function wordValid(req, res) {

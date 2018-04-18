@@ -89,9 +89,13 @@
                                     data-toggle="modal" data-target="#modal">
                                     Edit
                                 </button>
+                                {{!--
                                 <form :action="'/words/delete/' +  word._id " method="post" onclick="return confirm('Are you sure you want to delete this word?')">
                                     <input type="submit" class="btn btn-block btn-danger btn-xs" value="Delete">
-                                </form>
+                                </form> --}}
+                                <button onclick="return confirm('Are you sure you want to delete this word?')" v-on:click="deleteWord(word._id)" class="btn btn-xs btn-danger btn-block mb-2">
+                                    Delete
+                                </button>
 
                             </td>
                         </tr>
@@ -257,7 +261,7 @@
                             $('#modal').modal('show');
                         } else {
                             // Add message with link
-                            $('#alerts').append('<div class="alert alert-warning alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Word added!</strong>.</div>');
+                            toastr.success('Successfully added new word!')
                             // Refresh word list
                             this.refreshWords();
                             // Close modal
@@ -274,7 +278,7 @@
                             this.modalErrors = response.body.errors;
                             $('#modal').modal('show');
                         } else {
-                            $('#alerts').append('<div class="alert alert-warning alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Word updated!</strong>.</div>');
+                            toastr.success('Successfully updated word!')
                             // Refresh word list
                             this.refreshWords();
                             // Close modal
@@ -289,6 +293,15 @@
                     alert('There was an error');
                 }
 
+            },
+            deleteWord: function (id) {
+                this.$http.post('/api/words/delete/' + id, {}).then(response => {
+                    toastr.success('Successfully deleted word!')
+                    // Refresh word list
+                    this.refreshWords();
+                }, response => {
+                    alert('Unable to get dialects...' + JSON.stringify(response));
+                });
             },
             // Utility function for refreshing word list
             refreshWords: function () {
