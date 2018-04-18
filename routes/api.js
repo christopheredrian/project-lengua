@@ -78,7 +78,7 @@ const addToDictionary = (sentence) => {
 };
 
 router.get('/', (req, res) => {
-	res.render('api/index', );
+	res.render('api/index');
 });
 
 
