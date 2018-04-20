@@ -134,4 +134,22 @@ router.get('/afinn-165', (req, res) => {
     res.send(afinn);
 });
 
+/**
+ * Route for getting the dicitonary (for public)
+ */
+/**
+ * Display words
+ */
+router.get('/dictionary', (req, res) => {
+    Word.find({})
+        .sort({
+            date: 'desc'
+        })
+        .then(words => {
+            res.render('words/dictionary', {
+                words
+            });
+        });
+});
+
 module.exports = router;

@@ -1,11 +1,6 @@
 <div id="app">
     <div class="row">
         <h2 class="col-10">Word Listing</h2>
-        {{!--
-        <button class="">Add Word</button> --}}
-        <button v-on:click="addWord()" type="button" class="btn btn-success mb-4 float-right col-2" data-toggle="modal" data-target="#modal">
-            Add Word
-        </button>
     </div>
 
     <div class="row">
@@ -73,7 +68,6 @@
                             <th>Score</th>
                             <th>Dialect</th>
                             <th>Date Added</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody class="table-hover">
@@ -82,22 +76,6 @@
                             <td>\{{ word.score}}</td>
                             <td>\{{ word.dialect }}</td>
                             <td>\{{ formatDate(word.date) }}</td>
-                            <td>
-                                {{!--
-                                <a v-bind:href="'/words/edit/' + word._id" class="btn btn-xs btn-dark btn-block mb-2">Edit</a> --}}
-                                <button v-on:click="editWord(word._id,word.word, word.score, word.dialect)" type="button" class="btn btn-xs btn-warning btn-block mb-2"
-                                    data-toggle="modal" data-target="#modal">
-                                    Edit
-                                </button>
-                                {{!--
-                                <form :action="'/words/delete/' +  word._id " method="post" onclick="return confirm('Are you sure you want to delete this word?')">
-                                    <input type="submit" class="btn btn-block btn-danger btn-xs" value="Delete">
-                                </form> --}}
-                                <button onclick="return confirm('Are you sure you want to delete this word?')" v-on:click="deleteWord(word._id)" class="btn btn-xs btn-danger btn-block mb-2">
-                                    Delete
-                                </button>
-
-                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -311,12 +289,12 @@
                 this.getTotalUnlistedCount();
                 // Empty modal
                 this.modalData = {};
+
             },
             formatDate: function (d) {
                 var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 return new Date(d).toLocaleDateString("en-US", options)
             }
-
         },
         watch: {
             search: function (val, oldValue) {
