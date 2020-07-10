@@ -1,4 +1,5 @@
 const path = require('path');
+const cors = require('cors');
 const express = require('express');
 const exphbs = require('express-handlebars');
 const helpers = require('handlebars-helpers')();
@@ -100,6 +101,7 @@ app.get('/about', (req, res) => {
 
 app.use('/words', words);
 app.use('/users', require('./routes/users'));
+app.use(cors())
 app.use('/api', require('./routes/api'));
 
 
